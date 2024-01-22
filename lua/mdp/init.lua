@@ -7,6 +7,8 @@ local M = {
   buffer = nil,
   cache_dir = vim.fn.expand("~") .. "/.cache/mdp/",
   pdfviewer = "Skim",
+  template = "default",
+  state = ""
 }
 
 local function file_exists(path)
@@ -30,18 +32,23 @@ function M.setup(opts)
   if opts.pdfviewer then
     M.pdfviewer = opts.pdfviewer
   end
+  if opts.template then
+    M.template = opts.template
+  end
 end
 
 function M.convert(file, on_success)
+  M.state = "[Mdp] Compiling"
   local output = M.cache_dir .. file .. ".pdf"
   local cmd = "pandoc"
-  local args = { file, "--pdf-engine=xelatex", "-o", output }
+  local args = { file, "--pdf-engine=xelatex", "--template=" .. M.template, "-o", output }
 
   quickfix.run(cmd, args, ".", {
     show = "only_on_error",
     size = 10,
     position = "belowright"
   }, function()
+    M.state = "[Mdp] ✍️"
     if on_success then
       on_success(output)
     end
@@ -93,6 +100,11 @@ function M.stop()
     size = 10,
     position = "belowright"
   })
+  M.state = ""
+end
+
+function M.status()
+  return M.state
 end
 
 return M

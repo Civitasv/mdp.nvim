@@ -1,3 +1,10 @@
+---
+title: Markdown previewer utilizing pandoc
+author: Civitasv
+date: 2024-01-22
+colorlinks: true
+---
+
 # mdp (**M**ark**d**own **P**reviewer)
 
 > Live preview markdown using pdf viewer.
@@ -19,7 +26,8 @@ Now only support macOS.
     config = function()
       require("mdp").setup(
         {
-          pdfviewer = "Skim"
+          pdfviewer = "Skim",
+          template = "default"
         }
       )
     end
