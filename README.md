@@ -27,7 +27,9 @@ Now only support macOS.
       require("mdp").setup(
         {
           pdfviewer = "Skim",
-          template = "default"
+          template = "default",
+          CJKmainfont = "STHeiti",
+          args = {} -- will be passed to pandoc
         }
       )
     end
@@ -37,3 +39,4 @@ Now only support macOS.
 ## Usage
 
 Just call `:Mdp` in the markdown buffer.
+

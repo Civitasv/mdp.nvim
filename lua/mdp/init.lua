@@ -8,7 +8,10 @@ local M = {
   cache_dir = vim.fn.expand("~") .. "/.cache/mdp/",
   pdfviewer = "Skim",
   template = "default",
-  state = ""
+  font = "",
+  CJKmainfont = "",
+  state = "",
+  args = {}
 }
 
 local function file_exists(path)
@@ -35,13 +38,49 @@ function M.setup(opts)
   if opts.template then
     M.template = opts.template
   end
+  if opts.CJKmainfont then
+    M.CJKmainfont = opts.CJKmainfont
+  end
+  if opts.font then
+    M.font = opts.font
+  end
+  if opts.args then
+    M.args = opts.args
+  end
 end
 
 function M.convert(file, on_success)
   M.state = "[Mdp] Compiling"
+  local CJKfont = M.CJKmainfont
+  local font = M.font
+  local other_args = M.args
+
   local output = M.cache_dir .. file .. ".pdf"
   local cmd = "pandoc"
-  local args = { file, "--pdf-engine=xelatex", "--template=" .. M.template, "-o", output }
+  local args = {
+    file,
+    "-f",
+    "markdown+emoji",
+    "--pdf-engine=xelatex",
+    "--template=" .. M.template,
+    "--listings",
+  }
+
+  if CJKfont then
+    vim.list_extend(args, {
+      "-V", "CJKmainfont=" .. CJKfont,
+    })
+  end
+  if font then
+    vim.list_extend(args, {
+      "-V", "mainfont=" .. font,
+    })
+  end
+  vim.list_extend(args, other_args)
+
+  vim.list_extend(args, {
+    "-o", output
+  })
 
   quickfix.run(cmd, args, ".", {
     show = "only_on_error",
